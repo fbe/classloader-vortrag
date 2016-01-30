@@ -1,0 +1,90 @@
+\documentclass{beamer}
+\usepackage{ngerman}
+\usepackage[utf8]{inputenc} 
+
+\usetheme{Warsaw}  %% Themenwahl
+ 
+\title{Java Classloading für Fortgeschrittene}
+\author{Felix Becker}
+\date{\today}
+ 
+\begin{document}
+\maketitle
+\frame{\tableofcontents}
+ 
+\section{Classloading}
+	\begin{frame}
+		\frametitle{Classloader in der JVM}
+		\begin{itemize}
+			\item{BootstrapClassLoader}
+
+			\begin{itemize}
+				\item{lädt JVM Basisklassen aus jre/lib/}
+				\item{nativ implementiert}
+				\item{java.lang.ClassLoader private native Class findBootstrapClass}
+			\end{itemize}
+
+			\pause
+
+			\item{ExtensionsClassLoader}
+			\begin{itemize}
+				\item{lädt Extension-Klassen aus jre/lib/ext/ bzw. java.ext.dirs}
+				\item{com.sun.misc.Launcher\$ExtClassLoader}
+			\end{itemize}
+
+			\pause
+
+			\item{SystemClassLoader}
+			\begin{itemize}
+				\item{java.class.path (com.sun.misc.Launcher\$AppClassLoader)}
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{ServletStandard}
+		\begin{itemize}
+			\item{Eigener Classloader für jede Applikation}
+			\item{Container bringt ebenfalls eigene Classloader mit (bsp. tomcat/lib/)}
+			\item{WebAppClassloader sucht zuerst in der Webapp und fragt erst danach die Parent-Classloader}
+			\item{Library-Entwickler: Thread.currentThread.getContextClassLoader verwenden!}
+		\end{itemize}
+	\end{frame}
+
+\section{Java Bytecode}
+	\begin{frame}
+		\frametitle{Aufbau einer Java-Klasse}
+		\begin{itemize}
+			\item{Hier entsteht für Sie ein schönes Bild}
+		\end{itemize}
+	\end{frame}
+	% details ueber frames, operand stacks, local variables etc.
+
+\section{Java Instrumentation}
+	\begin{frame}
+		\frametitle{Java Agent / Instrumentation API}	
+		\begin{itemize}
+			\item{Mehrere Möglichkeiten in die JVM zu kommen:}
+			\begin{itemize}
+				\item{JVM TI (Java Virtual Machine Tooling Interface - JSR 163 - JavaTM Platform Profiling Architecture)}
+				\begin{itemize}
+					\item{Seit Java 5}
+					\item{C / C++ - Wird als shared object in die JVM geladen}
+					\item{Hohe Performance aber auch hohe Crashgefahr}
+				\end{itemize}
+
+				\item{Java-Agent}
+
+				\begin{itemize}
+					\item{java.lang.instrument}
+					\item{Class transformer definition}
+					\item{Hook in den native call defineClass}
+					\item{Mehrere Agents in der selben JVM erlaubt}
+					\item{Agents theoretisch dynamisch zur Runtime nachladbar}
+				\end{itemize}
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+
+\end{document}
+
