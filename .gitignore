@@ -1,10 +1,13 @@
 classloader-vortrag-javademos/.idea/
 classloader-vortrag-javademos/classloader-vortrag-javademos.iml
 classloader-vortrag-javademos/out/
+classloader-vortrag-javademos/target/
 classloadervortrag.aux
 classloadervortrag.log
 classloadervortrag.nav
 classloadervortrag.out
-classloadervortrag.pdf
 classloadervortrag.snm
 classloadervortrag.toc
+classloadervortrag.vrb
+classloader-vortrag-javademos/classloadervortrag-javademos.iml
+*.swp
