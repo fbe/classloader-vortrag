@@ -6,11 +6,16 @@
 \usepackage{color}
 
 \usetheme{Warsaw}  %% Themenwahl
+
+
+\usepackage{pgfpages}
+%\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen=right}
  
 \title{Java Class Loading im Detail}
 \author{Felix Becker}
 \date{\today}
-\institute{Parfümerie Douglas GmbH}
+\institute{Scala Usergroup Köln}
 
 
 
@@ -48,9 +53,10 @@
 \begin{frame}
 	\frametitle{Motivation}
 	\begin{itemize}
+		\item{Grundlage für Vortrag von Mathias Kub}
 		\item{ClassLoader-Hölle bei vielen Entwicklern gefürchtet}
 		\item{Verständnis vom class loading bei komplexen Fehlersituationen notwendig}
-		\item{Vorbereitung für Folgetalk über Bytecodemanipulation}
+		\item{Vorbereitung für Folgetalks über Scala Bytecode / JVM Internals + Scala}
 	\end{itemize}
 \end{frame}
 
@@ -196,6 +202,13 @@
 
 \begin{frame}
 	Live-Demo 1: First Steps
+\end{frame}
+
+\begin{frame}
+	\frametitle{resolveClass Kuriositäten}
+	'protected Class\textless?\textgreater loadClass( String name, boolean resolve ) Lädt die Klasse und bindet sie mit resolveClass() ein, wenn resolve gleich true ist.'
+	WTF?
+	\lstinputlisting{jvm-resolveclass.cpp}
 \end{frame}
 
 \begin{frame}
