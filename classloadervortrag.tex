@@ -6,11 +6,16 @@
 \usepackage{color}
 
 \usetheme{Warsaw}  %% Themenwahl
+
+
+\usepackage{pgfpages}
+%\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen=right}
  
 \title{Java Class Loading im Detail}
 \author{Felix Becker}
 \date{\today}
-\institute{Parfümerie Douglas GmbH}
+\institute{Scala User Group Köln}
 
 
 
@@ -48,9 +53,10 @@
 \begin{frame}
 	\frametitle{Motivation}
 	\begin{itemize}
+		\item{Grundlage für Vortrag von Mathias Kub}
 		\item{ClassLoader-Hölle bei vielen Entwicklern gefürchtet}
 		\item{Verständnis vom class loading bei komplexen Fehlersituationen notwendig}
-		\item{Vorbereitung für Folgetalk über Bytecodemanipulation}
+		\item{Vorbereitung für Folgetalks über Scala Bytecode / JVM Internals + Scala}
 	\end{itemize}
 \end{frame}
 
@@ -104,7 +110,6 @@
 	\end{itemize}
 
 	Die Initialisierung einer Klasse erzwingt die Initialisierung aller Super-Classes (gilt nicht für Interfaces!)
-	\pause
 	\begin{block}{Initialisierungen sind Threadsafe - sichere Erzeugung von Singletons!}
 		Die Initialisierung ist intern in der JVM über ein initialization lock abgesichert. Die JVM garantiert, dass die Initialisierung einer Klasse genau 1x stattfindet. 
 	\end{block}
@@ -220,6 +225,24 @@
 	\end{columns}
 \end{frame}
 
+\begin{frame}
+	\frametitle{ClassLoader.resolveClass}
+	\lstinputlisting{resolveClass.java}
+	\begin{quote}
+		\tiny{Lädt die Klasse und bindet sie mit resolveClass() ein, wenn resolve gleich true ist. - (Java ist auch eine Insel)}
+	\end{quote}
+	\begin{quote}
+		\tiny{The variable resolve is a flag to tell the class loader that classes referenced by this class name should be resolved (that is, any referenced class should be loaded as well). - JavaWorld (The basics of Java class loaders)}
+	\end{quote}
+	\begin{quote}
+	\tiny{As I mentioned previously, loading a class can be done partially (without resolution) or completely (with resolution). When we write our version of loadClass, we may need to call resolveClass, depending on the value of the resolve parameter to loadClass. - IBM Developer Works (Understanding the Java ClassLoader)}
+	\end{quote}
+	Live-Demo 2: resolveClass 
+	\pause
+	\lstinputlisting{jvm-resolveclass.cpp}
+\end{frame}
+
+
 \begin{frame}[fragile]
 	\frametitle{ClassLoader.getResource}
 	\begin{columns}[T] 
@@ -243,7 +266,7 @@
 \end{frame}
 
 \begin{frame}
-	Live-Demo 2: URL-ClassLoader
+	Live-Demo 3: URL-ClassLoader
 \end{frame}
  
 \section{Fortgeschrittene ClassLoader-Techniken}
@@ -270,7 +293,7 @@
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 3: Doppeltes Laden von Klassen über getrennte ClassLoader
+		Live-Demo 4: Doppeltes Laden von Klassen über getrennte ClassLoader
 	\end{frame}
 
 	\subsection{Loading Synthetic Classes}
@@ -287,7 +310,7 @@
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 4: Erzeugung synthetischer Klassen
+		Live-Demo 5: Erzeugung synthetischer Klassen
 	\end{frame}
 
 	
