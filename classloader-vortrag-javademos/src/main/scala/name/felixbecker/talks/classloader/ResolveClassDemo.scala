@@ -9,6 +9,7 @@ class A {
   var b: B = new B
 }
 
+// Run with.. -XX:+PrintJVMWarnings
 
 object ResolveClassDemo extends App {
 

@@ -110,7 +110,6 @@
 	\end{itemize}
 
 	Die Initialisierung einer Klasse erzwingt die Initialisierung aller Super-Classes (gilt nicht für Interfaces!)
-	\pause
 	\begin{block}{Initialisierungen sind Threadsafe - sichere Erzeugung von Singletons!}
 		Die Initialisierung ist intern in der JVM über ein initialization lock abgesichert. Die JVM garantiert, dass die Initialisierung einer Klasse genau 1x stattfindet. 
 	\end{block}
@@ -205,13 +204,6 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{resolveClass Kuriositäten}
-	'protected Class\textless?\textgreater loadClass( String name, boolean resolve ) Lädt die Klasse und bindet sie mit resolveClass() ein, wenn resolve gleich true ist.'
-	WTF?
-	\lstinputlisting{jvm-resolveclass.cpp}
-\end{frame}
-
-\begin{frame}
 	\frametitle{ClassLoader.loadClass}
 	\begin{columns}[T] 
 		\begin{column}{.57\textwidth}
@@ -232,6 +224,24 @@
 		\end{column}
 	\end{columns}
 \end{frame}
+
+\begin{frame}
+	\frametitle{ClassLoader.resolveClass}
+	\lstinputlisting{resolveClass.java}
+	\begin{quote}
+		\tiny{Lädt die Klasse und bindet sie mit resolveClass() ein, wenn resolve gleich true ist. - (Java ist auch eine Insel)}
+	\end{quote}
+	\begin{quote}
+		\tiny{The variable resolve is a flag to tell the class loader that classes referenced by this class name should be resolved (that is, any referenced class should be loaded as well). - JavaWorld (The basics of Java class loaders)}
+	\end{quote}
+	\begin{quote}
+	\tiny{As I mentioned previously, loading a class can be done partially (without resolution) or completely (with resolution). When we write our version of loadClass, we may need to call resolveClass, depending on the value of the resolve parameter to loadClass. - IBM Developer Works (Understanding the Java ClassLoader)}
+	\end{quote}
+	Live-Demo 2: resolveClass 
+	\pause
+	\lstinputlisting{jvm-resolveclass.cpp}
+\end{frame}
+
 
 \begin{frame}[fragile]
 	\frametitle{ClassLoader.getResource}
@@ -256,7 +266,7 @@
 \end{frame}
 
 \begin{frame}
-	Live-Demo 2: URL-ClassLoader
+	Live-Demo 3: URL-ClassLoader
 \end{frame}
  
 \section{Fortgeschrittene ClassLoader-Techniken}
@@ -283,7 +293,7 @@
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 3: Doppeltes Laden von Klassen über getrennte ClassLoader
+		Live-Demo 4: Doppeltes Laden von Klassen über getrennte ClassLoader
 	\end{frame}
 
 	\subsection{Loading Synthetic Classes}
@@ -300,7 +310,7 @@
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 4: Erzeugung synthetischer Klassen
+		Live-Demo 5: Erzeugung synthetischer Klassen
 	\end{frame}
 
 	
