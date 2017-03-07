@@ -12,10 +12,15 @@
 %\setbeameroption{show notes}
 %\setbeameroption{show notes on second screen=right}
  
-\title{Java Class Loading im Detail}
+\title{Java Class Loading In Detail}
 \author{Felix Becker}
 \date{\today}
-\institute{Scala User Group Köln}
+\institute{Amsterdam.scala}
+
+
+%\titlegraphic{\includegraphics[width=2cm]{logopolito}\hspace*{4.75cm}~%
+   %\includegraphics[width=2cm]{logopolito}
+%}
 
 
 
@@ -46,10 +51,12 @@
 
 
 \begin{frame}
-	\frametitle{Vortragsinhalte}
+	\frametitle{Contents}
 	\tableofcontents
 \end{frame}
 
+
+% do i need this in amsterdam?
 \begin{frame}
 	\frametitle{Motivation}
 	\begin{itemize}
@@ -60,117 +67,117 @@
 	\end{itemize}
 \end{frame}
 
-\section{Class Loading Grundlagen}
+\section{Class Loading basics}
 
 \begin{frame}
-	\frametitle{Was tun ClassLoader eigentlich?}
+	\frametitle{Task of a class loader?}
 	\begin{itemize}
-		\item{Laden Klassen und Resourcen aus beliebigen Quellen}
-		\item{Trennen die Datenquelle von der Applikation, Applikation muss nur den ClassLoader nutzen (Plattformunabhängigkeit!)}
-		\item{Klassen werden im JVM-Bytecode-Format geladen}
-		\item{Resourcen können beliebige Daten sein}
+		\item{Load classes and resources from different sources}
+		\item{Distinction between data source and application, application only must use the class loader (platform independency)}
+		\item{Classes are being loaded in the JVM byte code format}
+		\item{Resources can be any data (e.g. a file from the file system of from a web service call)}
 	\end{itemize}
 \end{frame}
 
 \subsection{Class startup life cycle}
 
 \begin{frame}
-	\frametitle{Startup life cycle einer Javaklasse (JVM Spec §12.1.2)}
+	\frametitle{Startup life cycle of a Java class (JVM spec §12.1.2)}
 	\begin{enumerate}
 		\item{Loading §12.2.1}
 			\begin{itemize}
-				\item{Laden des Bytecodes in die JVM über den ClassLoader}
+				\item{Load the bytecode into the JVM using the class loader}
 			\end{itemize}
 		\item{Verify §12.3.1}
 			\begin{itemize}
-				\item{Validierung der Klassenstruktur / Daten (Opcodes gültig, branch instructions check, signature check, ...)}
+				\item{Validation of the class structure and data (Opcodes valid, branch instructions check, signature check, ...)}
 			\end{itemize}
 		\item{Prepare §12.3.2}
 			\begin{itemize}
-				\item{Storage Allocation, Initialisierung von static fields (default values, keine static Initializer)}
+				\item{Storage allocation, initialization of static fields (default values, no static initializer)}
 			\end{itemize}
 		\item{(Resolve §12.3.3)}
 			\begin{itemize}
-				\item{Optionaler Schritt - Symbolic link resolution}
+				\item{Optional step: symbolic link resolution}
 			\end{itemize}
 		\item{Initialization §12.4.1}
 			\begin{itemize}
-				\item{Aufruf von Static-Initializern, Initialisierung von static fields}
+				\item{Call to static initializers, initialization of static fields}
 			\end{itemize}
 	\end{enumerate}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Initialization}
-	Initialisierung der Klasse ist die erste ''aktive'' Codeausführung von Klassencode (falls static fields / initializers vorhanden). Initialisierung findet statt, wenn das erste Mal:
+	Initialization of a class is the first ''active'' code execution of class code (if static fields / initializers exist). Initialization happens the first time (only once), when:
 	\begin{itemize}
-		\item{eine Instanz der Klasse erstellt wird}
-		\item{eine static-Methode der Klasse aufgerufen wird}
-		\item{auf static-Variablen der Klasse zugegriffen wird (Zuweisung, Lesen)}
+		\item{An instance of the class is being created}
+		\item{A static method of the class is being invoked}
+		\item{Static variables are read / written}
 	\end{itemize}
 
-	Die Initialisierung einer Klasse erzwingt die Initialisierung aller Super-Classes (gilt nicht für Interfaces!)
-	\begin{block}{Initialisierungen sind Threadsafe - sichere Erzeugung von Singletons!}
-		Die Initialisierung ist intern in der JVM über ein initialization lock abgesichert. Die JVM garantiert, dass die Initialisierung einer Klasse genau 1x stattfindet. 
+	Initialization of a class forces the initialization of all super classes (does not happen for interface) % TODO still valid in java 8?
+	\begin{block}{Initialization of a class is thread safe - safe way to create singletons!}
+		The initialization is secured by a jvm internal initialization lock. The jvm guarantees, that the initialization of a class happens only once.
 	\end{block}
 \end{frame}
 
 \subsection{ClassLoader delegation model}
 
 \begin{frame}
-	\frametitle{Standard-ClassLoader JVM 8 (Oracle)}
-	\includegraphics[scale=0.1]{assets/classloader-hierachie.png} 
+	\frametitle{Default class loader JVM 8 (Oracle)}
+	\includegraphics[scale=0.1]{assets/classloader-hierachie.png}  % TODO i18n
 \end{frame}
 
 \begin{frame}
-	\frametitle{Bootstrap-ClassLoader}
+	\frametitle{Bootstrap class loader}
 	\begin{columns}[T] 
-	\begin{column}{.46\textwidth}
-		\includegraphics[scale=0.06]{assets/classloader-hierachie-bootstrap-active.png} 
-	\end{column}
-	\hfill
-	\begin{column}{.56\textwidth}
+		\begin{column}{.46\textwidth}
+			\includegraphics[scale=0.06]{assets/classloader-hierachie-bootstrap-active.png}  % TODO i18n
+		\end{column}
+		\hfill
+		\begin{column}{.56\textwidth}
 
-	\begin{itemize}
-		\item{Lädt Java-Basisklassen (z.B. java/lang/String)}
-		\item{Nativ implementiert}
-		\item{java.lang.ClassLoader: private nativ Class findBootstrapClass}
-	\end{itemize}
+		\begin{itemize}
+			\item{Loads Java base classes (e.g. java/lang/String)}
+			\item{Native implementation}
+			\item{java.lang.ClassLoader: private native Class findBootstrapClass}
+		\end{itemize}
 
-	\end{column}
+		\end{column}
 	\end{columns}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Extension-ClassLoader}
+	\frametitle{Extension class loader}
 	\begin{columns}[T] 
-	\begin{column}{.46\textwidth}
-		\includegraphics[scale=0.06]{assets/classloader-hierachie-extension-active.png} 
-	\end{column}
-	\hfill
-	\begin{column}{.56\textwidth}
+		\begin{column}{.46\textwidth}
+			\includegraphics[scale=0.06]{assets/classloader-hierachie-extension-active.png} % TODO i18n
+		\end{column}
+		\hfill
+		\begin{column}{.56\textwidth}
 
-	\begin{itemize}
-		\item{Lädt Extension-Klassen}
-		\item{Beispiel: com/sun/nio/zipfs/ZipPath}
-		\item{lädt Extension-Klassen aus jre/lib/ext/ bzw. java.ext.dirs}
-		\item{com.sun.misc.Launcher\$ExtClassLoader}
-	\end{itemize}
-	\end{column}
+		\begin{itemize}
+			\item{Loads extension classes}
+			\item{Example: com/sun/nio/zipfs/ZipPath}
+			\item{Loads classes from jre/lib/ext/ or java.ext.dirs}
+			\item{com.sun.misc.Launcher\$ExtClassLoader}
+		\end{itemize}
+		\end{column}
 	\end{columns}
 \end{frame}
 
 \begin{frame}
-	\frametitle{System-ClassLoader}
+	\frametitle{System class loader}
 	\begin{columns}[T] 
 	\begin{column}{.46\textwidth}
-		\includegraphics[scale=0.06]{assets/classloader-hierachie-system-active.png} 
+		\includegraphics[scale=0.06]{assets/classloader-hierachie-system-active.png} % TODO i18n
 	\end{column}
 	\hfill
 	\begin{column}{.56\textwidth}
 
 	\begin{itemize}
-		\item{Lädt alle Klassen aus dem java.class.path (java -cp ..)}
+		\item{Loads all classes from the java.class.path (java -cp ..)}
 		\item{java.class.path (com.sun.misc.Launcher\$AppClassLoader)}
 	\end{itemize}
 
@@ -178,18 +185,18 @@
 	\end{columns}
 \end{frame}
 
-\section{ClassLoader-Implementierungen}
+\section{Class loader implementations}
 
 \begin{frame}
-	\frametitle{Relevante Funktionen}
+	\frametitle{Important functions}
 	\begin{itemize}
-		\item{Aus Applikationssicht:}
+		\item{From the applications point of view:}
 			\begin{itemize}
 				\item{Class.forName(String)}
 				\item{Class.getClassLoader()}
 				\item{ClassLoader.loadClass(String)}
 			\end{itemize}
-		\item{Im ClassLoader:}
+		\item{Inside the class loader:}
 			\begin{itemize}
 				\item{findLoadedClass(String)}
 				\item{findBootstrapClassOrNull(String)}
@@ -200,7 +207,7 @@
 \end{frame}
 
 \begin{frame}
-	Live-Demo 1: First Steps
+	Live-Demo 1: First steps
 \end{frame}
 
 \begin{frame}
@@ -212,14 +219,14 @@
 		\hfill
 		\begin{column}{.43\textwidth}
 			\begin{itemize}
-				\item{Class Loading ist synchronized}
-				\item{Lookup-Schritte:}
+				\item{Class loading ist synchronized in loadClass, too}
+				\item{lookup steps:}
 				\begin{enumerate}
-				\item{findLoadedClass (native)}
-				\item{parent / bootstrap lookup}
-				\item{findClass}
+					\item{findLoadedClass (native)}
+					\item{parent / bootstrap lookup}
+					\item{findClass}
 				\end{enumerate}
-				\item{findClass wird von eigenen ClassLoader-Implementierungen überschrieben}
+				\item{findClass is the function you have to override in your own class loader implementation}
 			\end{itemize}
 		\end{column}
 	\end{columns}
@@ -229,7 +236,7 @@
 	\frametitle{ClassLoader.resolveClass}
 	\lstinputlisting{resolveClass.java}
 	\begin{quote}
-		\tiny{Lädt die Klasse und bindet sie mit resolveClass() ein, wenn resolve gleich true ist. - (Java ist auch eine Insel)}
+		\tiny{Loads the class and binds it with resolveClass() - if resolve is true. - (Java ist auch eine Insel)}
 	\end{quote}
 	\begin{quote}
 		\tiny{The variable resolve is a flag to tell the class loader that classes referenced by this class name should be resolved (that is, any referenced class should be loaded as well). - JavaWorld (The basics of Java class loaders)}
@@ -252,9 +259,9 @@
 	\hfill
 	\begin{column}{.50\textwidth}
 			\begin{itemize}
-				\item{Zuerst wird beim Parent / Bootstrap-ClassLoader nach der Resource gesucht}
-				\item{findResource wird aufgerufen, falls Parent / Bootstrap keine Resource gefunden haben}
-				\item{findResource wird von eigenen ClassLoader-Implementierungen überschrieben}
+				\item{Lookup the resource at the parent / boot strap classloader first}
+				\item{findResource is being invoked when the parent / boot strap doesn't provide the resource}
+				\item{findResource is the function that you have to override in your own class loader implementation}
 			\end{itemize}
 		\end{column}
 	\end{columns}
@@ -269,58 +276,58 @@
 	Live-Demo 3: URL-ClassLoader
 \end{frame}
  
-\section{Fortgeschrittene ClassLoader-Techniken}
+\section{Advanced class loader techniques}
 
 
-	\subsection{Der ContextClassLoader \& die WebApps}
+	\subsection{The context class loader \& the web apps}
 	\begin{frame}
-		\frametitle{WebApp ClassLoader}
+		\frametitle{WebApp class loader}
 		\begin{center}
 			\includegraphics[scale=0.1]{assets/contextclassloader/webappclassloader-1.png} 
 		\end{center}
 	\end{frame}
 	\begin{frame}
-		\frametitle{WebApp ClassLoader - Context ClassLoader}
+		\frametitle{WebApp class loader - context class loader}
 		\begin{center}
 			\includegraphics[scale=0.1]{assets/contextclassloader/webappclassloader-2.png} 
 		\end{center}
 	\end{frame}
 	\begin{frame}
-		\frametitle{WebApp ClassLoader - Context ClassLoader}
+		\frametitle{WebApp class loader - context class loader}
 		\begin{center}
 			\includegraphics[scale=0.1]{assets/contextclassloader/webappclassloader-3.png} 
 		\end{center}
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 4: Doppeltes Laden von Klassen über getrennte ClassLoader
+		Live-Demo 4: Loading the same class twice with different class loaders
 	\end{frame}
 
-	\subsection{Loading Synthetic Classes}
+	\subsection{Loading synthetic classes}
 
 	\begin{frame}
-		\frametitle{Synthetic Classes}
+		\frametitle{Synthetic classes}
 		\begin{itemize}
-			\item{Synthetische Klassen sind ''künstliche'' Klassen, die nicht im source code abgebildet werden}
-			\item{Werden vom Compiler oder zur Runtime erzeugt}
-			\item{Stark eingesetzt im AOP-Umfeld - z.B Transaktions-Proxy-Klassen}
-			\item{Nutzung in Testframeworks wie PowerMock}
-			\item{Können neben dem Proxy-API von Java auch aus Bytes direkt im ClassLoader erzeugt werden}
+			\item{Synthentic classes are ''artificial'' classes that doesn't result from your java source code}
+			\item{Are created by the compiler or at runtime}
+			\item{Heavy usage in the AOP world - e.g. transaktions proxy classes}
+			\item{Usage in test frameworks like PowerMock}
+			\item{Can be created in the class loader by definining native JVM byte code}
 		\end{itemize}
 	\end{frame}
 
 	\begin{frame}
-		Live-Demo 5: Erzeugung synthetischer Klassen
+		Live-Demo 5: Creation of synthetic classes
 	\end{frame}
 
 	
 	\begin{frame}
-		\frametitle{Ende}
+		\frametitle{End}
 		
 		\begin{center}
-			Vielen Dank für eure Aufmerksamkeit!
+			Thank you for your attention
 			\par
-			Vortrag und Sourcen auf \href{https://github.com/fbe/classloader-vortrag}{github.com/fbe/classloader-vortrag}
+			Slides and sources at \href{https://github.com/fbe/classloader-vortrag}{github.com/fbe/classloader-vortrag}
 		\end{center}
 
 	\end{frame}
