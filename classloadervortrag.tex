@@ -1,5 +1,5 @@
 \documentclass[aspectratio=169]{beamer}
-\usepackage{ngerman}
+%\usepackage{ngerman}
 \usepackage[utf8]{inputenc} 
 
 \usepackage{listings}
@@ -12,15 +12,16 @@
 %\setbeameroption{show notes}
 %\setbeameroption{show notes on second screen=right}
  
-\title{Java Class Loading In Detail}
+\title{All about class loading!}
 \author{Felix Becker}
 \date{\today}
 \institute{Amsterdam.scala}
 
 
-%\titlegraphic{\includegraphics[width=2cm]{logopolito}\hspace*{4.75cm}~%
-   %\includegraphics[width=2cm]{logopolito}
-%}
+\titlegraphic{
+ % \includegraphics[width=2cm]{assets/amsterdam-scala.png}\hspace*{4.75cm}~%
+   \includegraphics[width=2cm]{assets/amsterdam-scala.png}
+}
 
 
 
@@ -60,10 +61,10 @@
 \begin{frame}
 	\frametitle{Motivation}
 	\begin{itemize}
-		\item{Grundlage für Vortrag von Mathias Kub}
-		\item{ClassLoader-Hölle bei vielen Entwicklern gefürchtet}
-		\item{Verständnis vom class loading bei komplexen Fehlersituationen notwendig}
-		\item{Vorbereitung für Folgetalks über Scala Bytecode / JVM Internals + Scala}
+		\item{Scala runs on the JVM (which is a good thing!)}
+		\item{You can solve complex classpath problems with knowledge about class loading}
+		\item{Deep knowledge of the JVM always enables you to do cool things (e.g. byte code instrumentation)}
+		\item{Knowledge about JVM byte code requires knowledge about class loading techniques}
 	\end{itemize}
 \end{frame}
 
@@ -126,14 +127,14 @@
 
 \begin{frame}
 	\frametitle{Default class loader JVM 8 (Oracle)}
-	\includegraphics[scale=0.1]{assets/classloader-hierachie.png}  % TODO i18n
+	\includegraphics[scale=0.1]{assets/classloader-hierachie.png} 
 \end{frame}
 
 \begin{frame}
 	\frametitle{Bootstrap class loader}
 	\begin{columns}[T] 
 		\begin{column}{.46\textwidth}
-			\includegraphics[scale=0.06]{assets/classloader-hierachie-bootstrap-active.png}  % TODO i18n
+			\includegraphics[scale=0.06]{assets/classloader-hierachie-bootstrap-active.png}
 		\end{column}
 		\hfill
 		\begin{column}{.56\textwidth}
@@ -152,7 +153,7 @@
 	\frametitle{Extension class loader}
 	\begin{columns}[T] 
 		\begin{column}{.46\textwidth}
-			\includegraphics[scale=0.06]{assets/classloader-hierachie-extension-active.png} % TODO i18n
+			\includegraphics[scale=0.06]{assets/classloader-hierachie-extension-active.png}
 		\end{column}
 		\hfill
 		\begin{column}{.56\textwidth}
@@ -171,7 +172,7 @@
 	\frametitle{System class loader}
 	\begin{columns}[T] 
 	\begin{column}{.46\textwidth}
-		\includegraphics[scale=0.06]{assets/classloader-hierachie-system-active.png} % TODO i18n
+		\includegraphics[scale=0.06]{assets/classloader-hierachie-system-active.png}
 	\end{column}
 	\hfill
 	\begin{column}{.56\textwidth}
